@@ -1,0 +1,30 @@
+# Allowed Docker images
+allowed_images = [
+  "nginx@sha256:e20c21e530f914fb6a95a755924b1cbf71f039372e94ac5ddcf8c3b386a44615",
+  "nginx:1.18.0-alpine@sha256:2dd397812ae1957ba18df0a62f0bcfa4ea3150027deab92cef0adf80803d0853",
+  "mongo",
+]
+
+allowed_checksums = [
+  "nginx",
+  "mongo",
+]
+
+# Restrict allowed Docker images
+restrict_images = rule {
+  all job.task_groups as tg {
+    all tg.tasks as task {
+      any allowed_images as allowed {
+        # Note that we require ":" and a tag after it
+        # which must start with a number, preventing "latest"
+        task.config.image matches allowed
+      }
+    }
+  }
+}
+
+
+# Main rule
+main = rule {
+  (restrict_images) else true
+}

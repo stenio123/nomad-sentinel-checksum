@@ -1,0 +1,21 @@
+# Allowed Docker images
+allowed_checksums = [
+  "md5:df6a4178aec9fbdc1d6d7e3634d1bc33",
+]
+
+# Restrict allowed Docker images
+restrict_images = rule {
+  all job.task_groups as tg {
+    all tg.tasks as task {
+      any allowed_checksums as allowed {
+        task.artifact.options.checksum matches allowed
+      }
+    }
+  }
+}
+
+
+# Main rule
+main = rule {
+  (restrict_images) else true
+}
